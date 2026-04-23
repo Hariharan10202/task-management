@@ -64,7 +64,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://task-management-tk8b.vercel.app/",
+    "https://classy-crumble-adead6.netlify.app/",
 ]
 
 ROOT_URLCONF = "taskmanager.urls"
