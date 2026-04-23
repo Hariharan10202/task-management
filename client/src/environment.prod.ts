@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8000/api',
+  apiUrl: 'https://task-management-5e8s.onrender.com/api',
 };

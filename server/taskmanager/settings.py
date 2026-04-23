@@ -64,7 +64,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",
+    "https://task-management-tk8b.vercel.app/",
 ]
 
 ROOT_URLCONF = "taskmanager.urls"
