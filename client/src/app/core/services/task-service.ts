@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
-import { environment } from '../../../environment';
+import { environment } from '../../../environment.prod';
 import { Task } from '../models/task.model';
 
 @Injectable({
