@@ -1,0 +1,25 @@
+<div class="task-card">
+  <div class="task-header">
+    <div class="left">
+      <div class="badges">
+        <span [class]="'status ' + task.status">{{ task.status }}</span>
+        <span [class]="'priority ' + task.priority">{{ task.priority }}</span>
+      </div>
+
+      <h3>{{ task.title }}</h3>
+    </div>
+
+    <div class="actions">
+      <button class="icon-btn edit" (click)="onEdit()">✏️</button>
+      <button class="icon-btn delete" (click)="onDelete()">🗑</button>
+    </div>
+  </div>
+
+  <p>{{ task.description }}</p>
+
+  @if (task.due_date) {
+    <div class="due-date">
+      Due on <strong>{{ task.due_date | date: 'mediumDate' }}</strong>
+    </div>
+  }
+</div>

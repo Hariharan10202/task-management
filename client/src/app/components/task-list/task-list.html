@@ -1,0 +1,89 @@
+<div class="container">
+  <header class="header">
+    <div>
+      <h1>Taskly</h1>
+      <p>Task management</p>
+    </div>
+
+    <button (click)="showForm.set(true)">+ New Task</button>
+  </header>
+
+  <h2 class="title">Welcome back 👋</h2>
+
+  <div class="stats">
+    <div class="stat-widget total">
+      <div class="icon">📊</div>
+      <div>
+        <h3>{{ total$ | async }}</h3>
+        <p>Total Tasks</p>
+      </div>
+    </div>
+
+    <div class="stat-widget pending">
+      <div class="icon">⏳</div>
+      <div>
+        <h3>{{ pending$ | async }}</h3>
+        <p>Pending</p>
+      </div>
+    </div>
+
+    <div class="stat-widget progress">
+      <div class="icon">🚧</div>
+      <div>
+        <h3>{{ inProgress$ | async }}</h3>
+        <p>In Progress</p>
+      </div>
+    </div>
+
+    <div class="stat-widget completed">
+      <div class="icon">✅</div>
+      <div>
+        <h3>{{ completed$ | async }}</h3>
+        <p>Completed</p>
+      </div>
+    </div>
+  </div>
+
+  <app-task-filter (filtersChanged)="onFiltersChanged($event)"></app-task-filter>
+
+  @if (loading()) {
+    <div class="loader-backdrop">
+      <div class="spinner"></div>
+      <p>Loading tasks...</p>
+    </div>
+  }
+
+  <div class="card-container">
+    @for (task of tasks$ | async; track task.id) {
+      <app-task-card
+        [task]="task"
+        (edit)="editTask(task)"
+        (delete)="openDeleteConfirm(task.id!)"
+      ></app-task-card>
+    }
+  </div>
+</div>
+
+@if (showForm()) {
+  <app-modal (close)="closeForm()">
+    <app-task-form
+      [task]="selectedTask()"
+      (close)="closeForm()"
+      (save)="selectedTask() ? update($event) : create($event)"
+    ></app-task-form>
+  </app-modal>
+}
+
+@if (showConfirmModal()) {
+  <div class="modal-backdrop">
+    <div class="modal">
+      <h3>Confirm Delete</h3>
+      <p>Are you sure you want to delete this task?</p>
+
+      <div class="actions">
+        <button class="cancel" (click)="cancelDelete()">Cancel</button>
+        <button class="delete" (click)="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+}

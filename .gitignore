@@ -1,0 +1,39 @@
+# ---- Django / Python ----
+*.log
+*.pot
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+db.sqlite3
+media/
+staticfiles/
+
+.env
+.env.*
+
+# ---- Python virtual env ----
+venv/
+env/
+.venv/
+django-venv/
+# ---- Angular ----
+node_modules/
+dist/
+.angular/
+coverage/
+.tmp/
+out-tsc/
+
+# Angular environment override (optional)
+# src/environments/environment.ts
+
+# ---- IDE ----
+.vscode/
+.idea/
+*.swp
+
+# ---- OS ----
+.DS_Store
+Thumbs.db

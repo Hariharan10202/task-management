@@ -1,0 +1,21 @@
+<div class="actions" [formGroup]="form">
+  <div class="search-box">
+    <input type="text" placeholder="Search tasks..." formControlName="search" />
+  </div>
+
+  <div class="filters">
+    <select formControlName="status">
+      <option value="">All Status</option>
+      <option value="pending">Pending</option>
+      <option value="in_progress">In Progress</option>
+      <option value="completed">Completed</option>
+    </select>
+
+    <select formControlName="priority">
+      <option value="">All Priority</option>
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+  </div>
+</div>
