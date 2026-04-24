@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-r)toglkr*xf)^aa67kok1k7i1n1!0nt&=m-6gwu1v&pun*t%%j"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_ALL_ORIGINS = True
@@ -63,9 +63,9 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
 ]
 
-# CORS_ALLOWED_ORIGINS = [
-#     "https://classy-crumble-adead6.netlify.app/",
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "https://classy-crumble-adead6.netlify.app/",
+]
 
 ROOT_URLCONF = "taskmanager.urls"
 
