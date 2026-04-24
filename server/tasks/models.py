@@ -23,8 +23,9 @@ class Task(Document):
 
     def clean(self):
         if self.due_date:
-            if self.due_date < datetime.date.today():
+            if self.due_date < datetime.date.today() and self.status != 'completed':
                 raise ValidationError("due_date cannot be in the past")
+
 
 
 # Create a Task model with fields:

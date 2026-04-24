@@ -5,46 +5,26 @@
       <p>Task management</p>
     </div>
 
-    <button (click)="showForm.set(true)">+ New Task</button>
+    <button (click)="showForm.set(true); formMode.set('create')">+ New Task</button>
   </header>
 
   <h2 class="title">Welcome back 👋</h2>
 
-  <div class="stats">
-    <div class="stat-widget total">
-      <div class="icon">📊</div>
-      <div>
-        <h3>{{ total$ | async }}</h3>
-        <p>Total Tasks</p>
-      </div>
-    </div>
+  <app-task-stats
+    [total]="total$"
+    [pending]="pending$"
+    [inProgress]="inProgress$"
+    [completed]="completed$"
+    [overdue]="overdue$"
+  />
 
-    <div class="stat-widget pending">
-      <div class="icon">⏳</div>
-      <div>
-        <h3>{{ pending$ | async }}</h3>
-        <p>Pending</p>
-      </div>
-    </div>
-
-    <div class="stat-widget progress">
-      <div class="icon">🚧</div>
-      <div>
-        <h3>{{ inProgress$ | async }}</h3>
-        <p>In Progress</p>
-      </div>
-    </div>
-
-    <div class="stat-widget completed">
-      <div class="icon">✅</div>
-      <div>
-        <h3>{{ completed$ | async }}</h3>
-        <p>Completed</p>
-      </div>
-    </div>
-  </div>
-
-  <app-task-filter (filtersChanged)="onFiltersChanged($event)"></app-task-filter>
+  <app-task-filter
+    [selectCount]="selectedCount()"
+    (filtersChanged)="onFiltersChanged($event)"
+    (delete)="deleteSelected()"
+    (markAsCompleted)="markSelectedCompleted()"
+    (handleExport)="handleExport($event)"
+  />
 
   @if (loading()) {
     <div class="loader-backdrop">
@@ -57,33 +37,45 @@
     @for (task of tasks$ | async; track task.id) {
       <app-task-card
         [task]="task"
+        [selected]="isSelectedMap().has(task.id!)"
+        (cardSelect)="toggleSelect(task.id!)"
         (edit)="editTask(task)"
         (delete)="openDeleteConfirm(task.id!)"
+        (statusToggle)="statusToggle($event)"
+        (duplicateTask)="openDuplicate($event)"
       ></app-task-card>
     }
   </div>
 </div>
+
+<app-task-pagination
+  [page]="page"
+  [totalPages]="totalPages()"
+  [hasMore]="hasMore"
+  (pageChange)="onPageChange($event)"
+/>
 
 @if (showForm()) {
   <app-modal (close)="closeForm()">
     <app-task-form
       [task]="selectedTask()"
       (close)="closeForm()"
-      (save)="selectedTask() ? update($event) : create($event)"
+      (save)="formMode() === 'edit' ? update($event) : create($event)"
+      [mode]="formMode()"
     ></app-task-form>
   </app-modal>
 }
 
 @if (showConfirmModal()) {
-  <div class="modal-backdrop">
-    <div class="modal">
-      <h3>Confirm Delete</h3>
-      <p>Are you sure you want to delete this task?</p>
+  <app-modal (close)="closeForm()">
+    <h3>Confirm Delete</h3>
+    <p>Are you sure you want to delete this task?</p>
 
-      <div class="actions">
-        <button class="cancel" (click)="cancelDelete()">Cancel</button>
-        <button class="delete" (click)="confirmDelete()">Delete</button>
-      </div>
+    <div class="actions">
+      <button class="cancel" (click)="cancelDelete()">Cancel</button>
+      <button class="delete" (click)="confirmDelete()">Delete</button>
     </div>
-  </div>
+  </app-modal>
 }
+
+<app-task-toast></app-task-toast>

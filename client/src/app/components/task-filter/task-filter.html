@@ -17,5 +17,65 @@
       <option value="medium">Medium</option>
       <option value="high">High</option>
     </select>
+
+    <!-- ✅ NEW SORT -->
+    <select formControlName="sort">
+      <option value="">Sort By</option>
+      <option value="created_desc">Newest First</option>
+      <option value="created_asc">Oldest First</option>
+      <option value="due_asc">Due Date (Nearest)</option>
+      <option value="due_desc">Due Date (Latest)</option>
+      <option value="priority_high">Priority (High → Low)</option>
+      <option value="priority_low">Priority (Low → High)</option>
+    </select>
   </div>
 </div>
+
+<div class="bulk-actions">
+  <div>
+    <span class="count">{{ selectCount }} selected</span>
+    <button
+      class="btn danger"
+      [disabled]="selectCount === 0"
+      (click)="showDeleteConfirmModal.set(true)"
+    >
+      🗑 Delete
+    </button>
+
+    <button class="btn primary" [disabled]="selectCount === 0" (click)="showMarkModal.set(true)">
+      ✔ Mark Completed
+    </button>
+  </div>
+  <div class="export" [formGroup]="exportForm">
+    <select formControlName="scope">
+      <option value="all">Export All</option>
+      <option value="page">Export Current Page</option>
+    </select>
+
+    <button class="btn primary" (click)="export()">Export</button>
+  </div>
+</div>
+
+@if (showDeleteConfirmModal()) {
+  <app-modal (close)="closeForm()">
+    <h3>Confirm Delete</h3>
+    <p>Are you sure you want to delete {{ selectCount }} task(s) ?</p>
+
+    <div class="actions">
+      <button class="cancel" (click)="cancel()">Cancel</button>
+      <button class="delete" (click)="deleteSelected()">Delete</button>
+    </div>
+  </app-modal>
+}
+
+@if (showMarkModal()) {
+  <app-modal (close)="closeForm()">
+    <h3>Confirm</h3>
+    <p>Are you sure you want to mark {{ selectCount }} task(s) as completed ?</p>
+
+    <div class="actions">
+      <button class="cancel" (click)="cancel()">Cancel</button>
+      <button class="btn primary" (click)="markSelectedCompleted()">Mark as completed</button>
+    </div>
+  </app-modal>
+}

@@ -1,25 +1,40 @@
-<div class="task-card">
+<div class="task-card" [class.selected]="selected" (click)="onCardClick($event)">
   <div class="task-header">
-    <div class="left">
-      <div class="badges">
-        <span [class]="'status ' + task.status">{{ task.status }}</span>
-        <span [class]="'priority ' + task.priority">{{ task.priority }}</span>
+    <div>
+      <label class="task-check" (click)="$event.stopPropagation()">
+        <input
+          type="checkbox"
+          [checked]="task.status === 'completed'"
+          (change)="toggleStatus(task)"
+          [disabled]="isCheckboxDisabled(task)"
+        />
+        <span class="checkmark"></span>
+      </label>
+      <div class="left">
+        <div class="badges">
+          <span [class]="'status ' + task.status">{{ task.status }}</span>
+          <span [class]="'priority ' + task.priority">{{ task.priority }}</span>
+        </div>
+        <h3>{{ task.title }}</h3>
       </div>
-
-      <h3>{{ task.title }}</h3>
     </div>
-
     <div class="actions">
-      <button class="icon-btn edit" (click)="onEdit()">✏️</button>
-      <button class="icon-btn delete" (click)="onDelete()">🗑</button>
+      <button class="icon-btn edit" (click)="onEdit(); $event.stopPropagation()">✏️</button>
+      <button class="icon-btn delete" (click)="onDelete(); $event.stopPropagation()">🗑</button>
+      <button class="icon-btn duplicate" (click)="duplicate(); $event.stopPropagation()">📄</button>
     </div>
   </div>
 
   <p>{{ task.description }}</p>
 
+  <div class="spacer"></div>
+
   @if (task.due_date) {
     <div class="due-date">
       Due on <strong>{{ task.due_date | date: 'mediumDate' }}</strong>
+      @if (isOverdue(task)) {
+        <span class="overdue-label">Overdue</span>
+      }
     </div>
   }
 </div>

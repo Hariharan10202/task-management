@@ -10,3 +10,32 @@ export interface Task {
   created_at?: string;
   due_date?: string;
 }
+
+export interface TaskFilters {
+  search: string;
+  status: string;
+  priority: string;
+  sort: string;
+}
+
+export interface TaskResponse {
+  data: Task[];
+  page: number;
+  total: number;
+}
+
+export type paramsType = {
+  status?: string;
+  priority?: string;
+  limit: number;
+  page: number;
+};
+
+export interface TaskParams {
+  status?: string;
+  priority?: string;
+  search?: string;
+  sort?: string;
+  page?: number;
+  limit?: number;
+}
