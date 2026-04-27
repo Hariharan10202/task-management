@@ -1,34 +1,45 @@
-import { Component, Input, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { Observable, combineLatest } from 'rxjs';
+import {
+  Component,
+  Input,
+  ElementRef,
+  ViewChild,
+  OnChanges,
+  SimpleChanges,
+  AfterViewInit,
+} from '@angular/core';
 import { Chart } from 'chart.js/auto';
-import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-task-stats',
-  imports: [AsyncPipe],
   templateUrl: './task-stats.html',
   styleUrl: './task-stats.css',
 })
-export class TaskStats implements OnInit {
-  @Input() total!: Observable<number>;
-  @Input() pending!: Observable<number>;
-  @Input() inProgress!: Observable<number>;
-  @Input() completed!: Observable<number>;
-  @Input() overdue!: Observable<number>;
+export class TaskStats implements OnChanges, AfterViewInit {
+  @Input() total!: number;
+  @Input() pending!: number;
+  @Input() inProgress!: number;
+  @Input() completed!: number;
+  @Input() overdue!: number;
 
   @ViewChild('chartCanvas') canvas!: ElementRef;
 
   chart!: Chart;
+  viewInitialized = false;
 
-  ngOnInit() {
-    combineLatest([this.completed, this.pending, this.overdue]).subscribe(
-      ([completed, pending, overdue]) => {
-        this.renderChart(completed, pending, overdue);
-      },
-    );
+  ngAfterViewInit() {
+    this.viewInitialized = true;
+    this.renderChart();
   }
 
-  renderChart(completed: number, pending: number, overdue: number) {
+  ngOnChanges(changes: SimpleChanges) {
+    if (this.viewInitialized) {
+      this.renderChart();
+    }
+  }
+
+  renderChart() {
+    if (!this.canvas) return;
+
     if (this.chart) {
       this.chart.destroy();
     }
@@ -39,7 +50,7 @@ export class TaskStats implements OnInit {
         labels: ['Completed', 'Pending', 'Overdue'],
         datasets: [
           {
-            data: [completed, pending, overdue],
+            data: [this.completed, this.pending, this.overdue],
           },
         ],
       },

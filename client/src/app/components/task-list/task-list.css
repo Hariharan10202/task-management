@@ -139,6 +139,22 @@
   border-radius: 8px;
 }
 
+.cdk-drag-preview {
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.25),
+    0 5px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  transform: rotate(2deg);
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms ease;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms ease;
+}
+
 @media (max-width: 480px) {
   .card-container {
     grid-template-columns: 1fr;

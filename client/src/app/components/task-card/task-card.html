@@ -27,11 +27,45 @@
 
   <p>{{ task.description }}</p>
 
+  <div class="attachments" (click)="$event.stopPropagation()">
+    <div class="attachments-header">
+      <strong>Attachments</strong>
+
+      <label class="upload-btn">
+        Upload
+        <input
+          type="file"
+          hidden
+          (change)="onFileSelected($event)"
+          accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg"
+        />
+      </label>
+    </div>
+
+    @if (attachments.length) {
+      <ul class="attachment-list">
+        @for (attachment of attachments; track attachment.id) {
+          <li class="attachment-item">
+            <span class="name" [title]="attachment.original_name">{{
+              attachment.original_name
+            }}</span>
+            <span class="size">{{ formatBytes(attachment.size_bytes) }}</span>
+            <button class="link-btn danger" (click)="onDeleteAttachment(attachment.id, $event)">
+              Delete
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="empty-attachments">No attachments yet</p>
+    }
+  </div>
+
   <div class="spacer"></div>
 
-  @if (task.due_date) {
+  @if (task.due_at) {
     <div class="due-date">
-      Due on <strong>{{ task.due_date | date: 'mediumDate' }}</strong>
+      Due on <strong>{{ task.due_at | date: 'MMM d, y, h:mm a' }}</strong>
       @if (isOverdue(task)) {
         <span class="overdue-label">Overdue</span>
       }

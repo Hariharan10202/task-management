@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { debounceTime } from 'rxjs';
 import { Task } from '../../core/models/task.model';
 import { noPastDateValidator } from '../../core/validators/date';
-import { debounceTime } from 'rxjs';
+
 @Component({
   selector: 'app-task-form',
   standalone: true,
@@ -17,7 +18,7 @@ export class TaskForm {
   @Output() save = new EventEmitter<Task>();
   @Output() close = new EventEmitter<void>();
 
-  today = new Date().toISOString().split('T')[0];
+  minDateTime = this.toDateTimeLocal(new Date());
   form: FormGroup;
   private taskId: string | null = null;
 
@@ -27,32 +28,31 @@ export class TaskForm {
       description: [''],
       status: ['pending', Validators.required],
       priority: ['medium', Validators.required],
-      due_date: ['', noPastDateValidator],
+      due_at: ['', noPastDateValidator], // validator works if it parses full datetime
     });
   }
 
   ngOnInit(): void {
     this.restoreDraft();
-
     this.form.valueChanges.pipe(debounceTime(300)).subscribe((value) => {
       localStorage.setItem(this.getStorageKey(), JSON.stringify(value));
     });
   }
 
-  private getStorageKey(): string {
-    if (this.mode === 'edit' && this.task?.id) {
-      return `task_form_draft_${this.task.id}`;
-    }
+  private toDateTimeLocal(value: string | Date): string {
+    const d = new Date(value);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
 
+  private getStorageKey(): string {
+    if (this.mode === 'edit' && this.task?.id) return `task_form_draft_${this.task.id}`;
     return 'task_form_draft_new';
   }
 
   private restoreDraft(): void {
     const draft = localStorage.getItem(this.getStorageKey());
-
-    if (draft) {
-      this.form.patchValue(JSON.parse(draft));
-    }
+    if (draft) this.form.patchValue(JSON.parse(draft));
   }
 
   ngOnChanges(): void {
@@ -63,7 +63,7 @@ export class TaskForm {
         description: this.task.description ?? '',
         status: this.task.status,
         priority: this.task.priority,
-        due_date: this.task.due_date ?? null,
+        due_at: this.task.due_at ? this.toDateTimeLocal(this.task.due_at) : null,
       });
       this.restoreDraft();
     } else {
@@ -73,7 +73,7 @@ export class TaskForm {
         description: '',
         status: 'pending',
         priority: 'medium',
-        due_date: null,
+        due_at: null,
       });
       this.restoreDraft();
     }
@@ -85,14 +85,15 @@ export class TaskForm {
       return;
     }
 
-    const baseTask = {
-      ...this.form.value,
+    const raw = this.form.value;
+    const payload = {
+      ...raw,
+      due_at: raw.due_at ? new Date(raw.due_at).toISOString() : null, // send ISO to backend
     };
 
-    const task: Task = this.mode === 'edit' ? { id: this.taskId!, ...baseTask } : { ...baseTask };
+    const task: Task = this.mode === 'edit' ? { id: this.taskId!, ...payload } : { ...payload };
 
     localStorage.removeItem(this.getStorageKey());
-
     this.save.emit(task);
   }
 

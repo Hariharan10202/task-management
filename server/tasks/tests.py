@@ -2,6 +2,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from .models import Task
 
+
 class TaskAPITest(APITestCase):
 
     def setUp(self):
@@ -15,7 +16,7 @@ class TaskAPITest(APITestCase):
             "description": "Test Description",
             "status": "pending",
             "priority": "high",
-            "due_date": "2026-12-31"
+            "due_at": "2026-12-31",
         }
 
         response = self.client.post(url, data, format="json")
@@ -24,16 +25,11 @@ class TaskAPITest(APITestCase):
         self.assertEqual(response.data["title"], "Test Task")
         self.assertEqual(Task.objects.count(), 1)
 
-
     def test_get_tasks_list(self):
-        Task.objects.create(
-            title="Task 1",
-            status="pending",
-            priority="low"
-        )
+        Task.objects.create(title="Task 1", status="pending", priority="low")
 
         url = "/api/tasks/"
         response = self.client.get(url)
-        
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)

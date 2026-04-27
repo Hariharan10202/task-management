@@ -11,11 +11,11 @@
   <h2 class="title">Welcome back 👋</h2>
 
   <app-task-stats
-    [total]="total$"
-    [pending]="pending$"
-    [inProgress]="inProgress$"
-    [completed]="completed$"
-    [overdue]="overdue$"
+    [total]="total()"
+    [pending]="pending()"
+    [inProgress]="inProgress()"
+    [completed]="completed()"
+    [overdue]="overdue()"
   />
 
   <app-task-filter
@@ -33,17 +33,27 @@
     </div>
   }
 
-  <div class="card-container">
-    @for (task of tasks$ | async; track task.id) {
-      <app-task-card
-        [task]="task"
-        [selected]="isSelectedMap().has(task.id!)"
-        (cardSelect)="toggleSelect(task.id!)"
-        (edit)="editTask(task)"
-        (delete)="openDeleteConfirm(task.id!)"
-        (statusToggle)="statusToggle($event)"
-        (duplicateTask)="openDuplicate($event)"
-      ></app-task-card>
+  <div
+    class="card-container"
+    cdkDropList
+    [cdkDropListData]="latestTasks()"
+    cdkDropListOrientation="mixed"
+    (cdkDropListDropped)="drop($event)"
+  >
+    @for (task of latestTasks(); track task.id) {
+      <div cdkDrag>
+        <app-task-card
+          [task]="task"
+          [selected]="isSelectedMap().has(task.id!)"
+          (cardSelect)="toggleSelect(task.id!)"
+          (edit)="editTask(task)"
+          (delete)="openDeleteConfirm(task.id!)"
+          (statusToggle)="statusToggle($event)"
+          (duplicateTask)="openDuplicate($event)"
+          (uploadAttachment)="onUploadAttachment($event)"
+          (deleteAttachment)="onDeleteAttachment($event)"
+        />
+      </div>
     }
   </div>
 </div>

@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Task } from '../../core/models/task.model';
+import { Task, TaskAttachment } from '../../core/models/task.model';
 
 @Component({
   selector: 'app-task-card',
@@ -17,6 +17,9 @@ export class TaskCard {
   @Output() statusToggle = new EventEmitter<Task>();
   @Output() cardSelect = new EventEmitter<void>();
   @Output() duplicateTask = new EventEmitter<Task>();
+
+  @Output() uploadAttachment = new EventEmitter<{ taskId: string; file: File }>();
+  @Output() deleteAttachment = new EventEmitter<{ taskId: string; attachmentId: string }>();
 
   onEdit() {
     this.edit.emit(this.task);
@@ -38,10 +41,37 @@ export class TaskCard {
     this.cardSelect.emit();
   }
 
-  isCheckboxDisabled(task: Task): boolean {
-    if (!task.due_date) return false;
+  onFileSelected(event: Event) {
+    event.stopPropagation();
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file || !this.task.id) return;
 
-    const due = new Date(task.due_date).getTime();
+    this.uploadAttachment.emit({ taskId: this.task.id, file });
+    input.value = '';
+  }
+
+  onDeleteAttachment(attachmentId: string, event: MouseEvent) {
+    event.stopPropagation();
+    if (!this.task.id) return;
+    this.deleteAttachment.emit({ taskId: this.task.id, attachmentId });
+  }
+
+  get attachments(): TaskAttachment[] {
+    return this.task.attachments ?? [];
+  }
+
+  formatBytes(bytes: number): string {
+    if (!bytes) return '0 B';
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${sizes[i]}`;
+  }
+
+  isCheckboxDisabled(task: Task): boolean {
+    if (!task.due_at) return false;
+
+    const due = new Date(task.due_at).getTime();
     const now = new Date().getTime();
 
     const isOverdue = due < now;
@@ -51,9 +81,9 @@ export class TaskCard {
   }
 
   isOverdue(task: any): boolean {
-    if (!task.due_date) return false;
+    if (!task.due_at) return false;
 
-    const due = new Date(task.due_date).getTime();
+    const due = new Date(task.due_at).getTime();
     const now = new Date().getTime();
 
     return task.status !== 'completed' && due < now;

@@ -8,7 +8,16 @@ export interface Task {
   status: TaskStatus;
   priority: TaskPriority;
   created_at?: string;
-  due_date?: string;
+  due_at?: string;
+  attachments?: TaskAttachment[];
+}
+
+export interface TaskAttachment {
+  id: string;
+  original_name: string;
+  size_bytes: number;
+  content_type?: string;
+  created_at?: string;
 }
 
 export interface TaskFilters {

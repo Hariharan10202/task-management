@@ -17,8 +17,6 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -26,18 +24,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-r)toglkr*xf)^aa67kok1k7i1n1!0nt&=m-6gwu1v&pun*t%%j"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_ALL_ORIGINS = True
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST = "smtp-relay.brevo.com"
 EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = "itmehariharan@gmail.com"
+EMAIL_HOST_USER = "a9325e001@smtp-brevo.com"
+EMAIL_HOST_PASSWORD = "UZJq2YT53b1PzMKg"
 EMAIL_USE_TLS = True
-
-EMAIL_HOST_USER = "itmehariharan@gmail.com"
-EMAIL_HOST_PASSWORD = "jrxdlsvvbbmmxslc" 
 # Application definition
 
 INSTALLED_APPS = [
@@ -49,7 +47,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "tasks",
     "corsheaders",
+    "django_crontab",
 ]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -133,3 +133,29 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+
+
+# Attachments
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+TASK_ATTACHMENT_MAX_SIZE = 10 * 1024 * 1024  # set 5MB if needed
+TASK_ATTACHMENT_ALLOWED_EXTENSIONS = {
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".txt",
+    ".png",
+    ".jpg",
+    ".jpeg",
+}
+
+# Reminder
+TASK_REMINDER_LEAD_MINUTES = 60
+TASK_REMINDER_CRON_INTERVAL_MINUTES = 5
+
+# Cron jobs
+CRONJOBS = [
+    ("*/5 * * * *", "your_app.cron.send_due_task_reminders"),  # every 5 mins
+]
